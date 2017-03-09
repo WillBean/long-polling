@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>REQUEST CLIENT</title>
+</head>
+<body>
+<button id="send">发送请求</button>
+<script>
+    var send = document.querySelector('#send')
+    send.onclick = function () {
+        polling('http://localhost:8888/longPolling',5000)
+    }
+    function polling(url,timeout) {
+        var xhr = new XMLHttpRequest()
+        xhr.open("get",url)
+        xhr.timeout = timeout;
+        xhr.onreadystatechange = function () {
+            if( xhr.readyState === 4 && xhr.status === 200){
+                alert('对方选择了·确定·')
+            }else if( xhr.readyState === 4 && xhr.status === 204){
+                alert('对方选择了·取消·')
+            }
+        }
+        xhr.ontimeout = function () {
+            console.log('Timeout resend '+ new Date());
+            polling('http://localhost:8888/longPolling',5000)
+        }
+        xhr.send()
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RESPONSE CLIENT</title>
+</head>
+<body>
+<div id="container" style="display: none">
+    <button id="yes">确定</button>
+    <button id="no">取消</button>
+</div>
+
+<script>
+    var yes = document.querySelector("#yes")
+    var no = document.querySelector("#no")
+    var container = document.querySelector("#container")
+
+    var eventSource = new EventSource('/ensure')
+    eventSource.onmessage = function (e) {
+        if(e.data === 'ensure'){
+            container.style.display = 'block'
+            eventSource.close()
+        }
+    }
+    eventSource.onerror = function (err) {
+        console.log(`EventSource error:`);
+        console.log(err);
+    }
+
+    yes.onclick = function () {
+        postMsg('data=yes')
+    }
+    no.onclick = function () {
+        postMsg('data=no')
+    }
+
+    function postMsg(msg) {
+        var xhr = new XMLHttpRequest()
+        xhr.open('post','/sure')
+        xhr.onreadystatechange = function () {
+            if(xhr.readyState === 4 && xhr.status === 200){
+                container.style.display = 'none'
+            }
+        }
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send(msg)
+    }
+
+</script>
+</body>
+</html>
